@@ -1,0 +1,20 @@
+{
+  "name": "3d-model-on-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare:gs": "node scripts/prepare-gs-assets.mjs"
+  },
+  "dependencies": {
+    "@google/model-viewer": "^4.3.1",
+    "three": "^0.183.2",
+    "vite": "^8.2.1"
+  },
+  "devDependencies": {
+    "@playcanvas/supersplat-viewer": "^1.29.1"
+  }
+}

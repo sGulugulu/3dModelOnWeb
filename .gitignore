@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+*.local
+.reasonix
+
+# 3DGS 展示资源(体积大,不纳入版本库;由 scripts/prepare-gs-assets.mjs 生成)
+public/gs-data
+public/gs-viewer

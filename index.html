@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>3D 模型展示</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="toolbar">
+      <h1 class="title">🧊 3D 模型展示</h1>
+      <div class="actions">
+        <div class="mode-switch">
+          <button id="mode-glb" class="btn mode-btn active" type="button">🧊 GLB 模型</button>
+          <button id="mode-gs" class="btn mode-btn" type="button">✨ 高斯泼溅</button>
+        </div>
+        <label class="btn btn-primary" id="upload-glb-btn" for="file-input">
+          📂 上传 GLB
+        </label>
+        <input
+          id="file-input"
+          type="file"
+          accept=".glb"
+          hidden
+        />
+      </div>
+    </header>
+
+    <!-- GLB 视图工具条 -->
+    <div class="view-tools" id="glb-tools">
+      <span class="tools-title">旋转</span>
+      <label class="tool-option">
+        <input type="radio" name="rot-mode" value="none" checked />
+        <span>静止</span>
+      </label>
+      <label class="tool-option">
+        <input type="radio" name="rot-mode" value="rotate" />
+        <span>旋转</span>
+      </label>
+
+      <span class="tool-divider"></span>
+      <button id="toggle-poi-edit" class="btn btn-ghost" title="编辑模式：点击模型表面添加观察点位">📍 编辑点位</button>
+      <button id="toggle-poi-vis" class="btn btn-ghost" title="显示/隐藏观察点位">点位</button>
+      <button id="toggle-display-edit" class="btn btn-ghost" title="编辑模式：点击模型表面添加设备数显">🔢 添加数显</button>
+      <button id="toggle-display-vis" class="btn btn-ghost" title="显示/隐藏数显">数显</button>
+      <span id="file-name" class="file-name">尚未选择模型</span>
+    </div>
+
+    <!-- 3DGS 视图工具条 -->
+    <div class="view-tools" id="gs-tools" hidden>
+      <span class="tools-title">模型</span>
+      <select id="gs-model-select" class="gs-model-select" title="选择要展示的高斯泼溅模型">
+        <option value="">加载中…</option>
+      </select>
+
+      <span class="tool-divider"></span>
+      <span class="tools-title">数据格式</span>
+      <label class="tool-option" id="gs-fmt-sog">
+        <input type="radio" name="gs-format" value="sog" checked />
+        <span>SOG 文件</span>
+      </label>
+      <label class="tool-option" id="gs-fmt-tile">
+        <input type="radio" name="gs-format" value="tile" />
+        <span>Tile 流式(LOD)</span>
+      </label>
+      <label class="tool-option" id="gs-fmt-ply">
+        <input type="radio" name="gs-format" value="ply" />
+        <span>PLY 原始(全精度)</span>
+      </label>
+
+      <span class="tool-divider"></span>
+      <span class="tools-title">画质</span>
+      <label class="tool-option">
+        <input type="radio" name="gs-quality" value="high" checked />
+        <span>高清(1000万)</span>
+      </label>
+      <label class="tool-option">
+        <input type="radio" name="gs-quality" value="standard" />
+        <span>均衡(400万)</span>
+      </label>
+
+      <span class="tool-divider"></span>
+      <span id="gs-model-name" class="file-name"></span>
+    </div>
+
+    <main class="stage">
+      <model-viewer
+        id="viewer"
+        camera-controls
+        touch-action="pan-y"
+        camera-orbit="0deg 80deg 0deg"
+        zoom-sensitivity="0.05"
+        min-camera-orbit="auto auto 0.01m"
+        max-camera-orbit="auto auto 100m"
+        alt="用户上传的 3D 模型"
+      >
+      </model-viewer>
+
+      <!-- 3DGS 展示区(官方 SuperSplat Viewer) -->
+      <iframe
+        id="gs-frame"
+        class="gs-frame"
+        title="3D 高斯泼溅展示"
+        allow="xr-spatial-tracking"
+        hidden
+      ></iframe>
+
+      <div id="drop-hint" class="drop-hint">
+        <div class="drop-hint__icon">⬆️</div>
+        <div class="drop-hint__text">
+          点击左上角「上传 GLB」，或将 .glb 文件拖拽到此处
+        </div>
+      </div>
+
+      <!-- 编辑模式提示 -->
+      <div id="poi-edit-hint" class="poi-edit-hint" hidden>
+        编辑模式：点击模型表面可添加观察点位
+      </div>
+      <div id="display-edit-hint" class="display-edit-hint" hidden>
+        数显模式：点击模型表面可添加设备数显数字
+      </div>
+    </main>
+
+    <!-- 点位编辑面板(观察定位用) -->
+    <aside id="poi-panel" class="poi-panel" hidden>
+      <div class="poi-resize-handle" data-resize-panel="poiPanel" title="拖拽调整宽度"></div>
+      <div class="poi-panel-header">
+        <span class="poi-panel-title">📍 点位编辑</span>
+        <div class="poi-panel-actions">
+          <button id="poi-clear" class="btn btn-ghost btn-sm">清空</button>
+          <button id="poi-close" class="btn btn-ghost btn-sm">完成</button>
+        </div>
+      </div>
+      <div class="poi-panel-hint">
+        观察点位：开启「编辑点位」后点击模型表面添加，点击点位或「跳转」可拉近镜头观察。可微调坐标。
+      </div>
+      <div id="poi-list" class="poi-list"></div>
+    </aside>
+
+    <!-- 数显编辑面板(显示设备数据用) -->
+    <aside id="display-panel" class="poi-panel" hidden>
+      <div class="poi-resize-handle" data-resize-panel="displayPanel" title="拖拽调整宽度"></div>
+      <div class="poi-panel-header">
+        <span class="poi-panel-title">🔢 数显编辑</span>
+        <div class="poi-panel-actions">
+          <button id="display-clear" class="btn btn-ghost btn-sm">清空</button>
+          <button id="display-close" class="btn btn-ghost btn-sm">完成</button>
+        </div>
+      </div>
+      <div class="poi-panel-hint">
+        设备数显：开启「添加数显」后点击模型表面添加，在列表中填写设备名与单位，设备传来的实时数字会显示在对应位置。
+      </div>
+      <div id="display-list" class="poi-list"></div>
+    </aside>
+
+    <footer class="tips">
+      <span>🖱️ 左键拖动旋转</span>
+      <span>🔍 滚轮放大 / 缩小</span>
+      <span>🖐️ 右键或双指平移</span>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

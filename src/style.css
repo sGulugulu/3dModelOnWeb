@@ -1,0 +1,552 @@
+:root {
+  --bg: #0f1117;
+  --panel: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #e8eaf0;
+  --muted: #9aa3b2;
+  --accent: #4c8dff;
+  --accent2: #ffcf4c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* hidden 属性必须生效(作者样式会覆盖 UA 的 [hidden] 规则) */
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #1b2233 0%, var(--bg) 60%);
+  color: var(--text);
+  font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ---- 顶栏 ---- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(10, 12, 18, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 5;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 展示模式切换 */
+.mode-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+}
+
+.mode-btn {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border-color: transparent;
+  background: transparent;
+  font-size: 13px;
+}
+
+.mode-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--panel);
+  color: var(--text);
+  transition: filter 0.15s ease, background 0.15s ease;
+  user-select: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-ghost:hover,
+.btn-ghost.active {
+  background: rgba(76, 141, 255, 0.2);
+  border-color: var(--accent);
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* ---- 视图工具条 ---- */
+.view-tools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(10, 12, 18, 0.4);
+  font-size: 13px;
+  z-index: 5;
+}
+
+.tools-title {
+  color: var(--muted);
+}
+
+/* 模型下拉框 */
+.gs-model-select {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 13px;
+  max-width: 220px;
+  cursor: pointer;
+}
+
+.gs-model-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.tool-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.tool-option input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+.tool-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.file-name {
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* ---- 主体舞台 ---- */
+.stage {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+model-viewer {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 3DGS 展示区(SuperSplat Viewer iframe) */
+.gs-frame {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+  background: #0b0d12;
+}
+
+/* POI 数据气泡(hotspot) - 见下方 button.poi-dot 样式 */
+
+/* 观察点位标记:明显高对比圆点 + 序号,用于近距离观察定位 */
+button.poi-dot {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: #ff5f2b; /* 反色高对比橙 */
+  border: 3px solid #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 2px rgba(255, 95, 43, 0.35), 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+button.poi-dot:hover {
+  filter: brightness(1.15);
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+/* 设备数显气泡:展示设备实时数据 */
+button.display-dot {
+  width: auto;
+  height: auto;
+  min-width: 58px;
+  padding: 6px 11px;
+  background: linear-gradient(180deg, #35f59a 0%, #12c97d 100%); /* 亮绿色实底 */
+  border: 3px solid #ffffff; /* 白色描边,与深色模型强对比 */
+  border-radius: 9px;
+  transform: translate(-50%, -120%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  cursor: pointer;
+  font-family: inherit;
+  color: #04281a;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(46, 235, 142, 0.95),
+    0 4px 14px rgba(0, 0, 0, 0.7);
+  font-size: 12px;
+}
+
+button.display-dot:hover {
+  filter: brightness(1.12);
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.45),
+    0 0 28px rgba(46, 235, 142, 1),
+    0 4px 14px rgba(0, 0, 0, 0.7);
+}
+
+/* 顶部常亮绿色圆点锚(始终可见) */
+button.display-dot::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle at 35% 35%, #7bffc3, #12c97d);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(46, 235, 142, 1);
+}
+
+/* 数显底部小三角指向锚点(白色) */
+button.display-dot::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top: 8px solid #ffffff;
+  filter: drop-shadow(0 0 3px rgba(46, 235, 142, 0.9));
+}
+
+.display-dot-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #064f30;
+  letter-spacing: 0.3px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.display-dot-value {
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.02;
+  color: #00331d;
+  font-variant-numeric: tabular-nums; /* 数字等宽,避免数值变化时跳动 */
+}
+
+/* 低亮状态:透明度 50% */
+.poi-dot.dim,
+.display-dot.dim {
+  opacity: 0.5;
+}
+
+/* POI 面板:设备名/单位 输入行 */
+.poi-row-meta {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.poi-name,
+.display-name {
+  width: 72px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.poi-unit,
+.display-unit {
+  width: 40px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+  text-align: center;
+}
+
+.poi-name::placeholder,
+.poi-unit::placeholder,
+.display-name::placeholder,
+.display-unit::placeholder {
+  color: var(--muted);
+}
+
+/* 上传提示浮层 */
+.drop-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  color: var(--muted);
+  pointer-events: none;
+  transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+.drop-hint--active {
+  background: rgba(76, 141, 255, 0.12);
+  color: var(--text);
+}
+
+.drop-hint--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.drop-hint__icon {
+  font-size: 44px;
+}
+
+/* 编辑模式提示 */
+.poi-edit-hint {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background: rgba(255, 207, 76, 0.15);
+  border: 1px solid var(--accent2);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--accent2);
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* 数显模式提示 */
+.display-edit-hint {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background: rgba(61, 220, 132, 0.15);
+  border: 1px solid #3ddc84;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #3ddc84;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* 点位编辑面板 */
+.poi-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  background: rgba(15, 17, 23, 0.94);
+  border-left: 1px solid var(--border);
+  padding: 16px;
+  z-index: 7;
+  overflow-y: auto;
+  overflow-x: hidden;
+  backdrop-filter: blur(4px);
+}
+
+/* 面板宽度拖拽调整手柄(位于面板左边缘) */
+.poi-resize-handle {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: calc(100vw - 0px);
+  width: 10px;
+  cursor: col-resize;
+  z-index: 8;
+  margin-left: -5px;
+  background: transparent;
+}
+
+.poi-resize-handle:hover {
+  background: rgba(76, 141, 255, 0.25);
+}
+
+.poi-panel.resizing {
+  user-select: none;
+}
+
+.poi-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.poi-panel-title {
+  font-weight: 600;
+}
+
+.poi-panel-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.poi-panel-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.poi-empty {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.poi-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.poi-row-main {
+  flex: 1;
+}
+
+.poi-row-label {
+  display: block;
+  font-size: 11px;
+  color: var(--accent2);
+  margin-bottom: 4px;
+}
+
+.poi-row-coords {
+  display: flex;
+  gap: 4px;
+}
+
+.poi-xyz {
+  width: 44px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 12px;
+  text-align: center;
+}
+
+.poi-del {
+  color: #ff7a7a;
+}
+
+/* ---- 底部提示 ---- */
+.tips {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: rgba(10, 12, 18, 0.6);
+}
+
+@media (max-width: 720px) {
+  .view-tools {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tips {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .poi-panel {
+    width: 100%;
+  }
+}
