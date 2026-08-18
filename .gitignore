@@ -7,3 +7,27 @@ dist
 # 3DGS 展示资源(体积大,不纳入版本库;由 scripts/prepare-gs-assets.mjs 生成)
 public/gs-data
 public/gs-viewer
+
+# ===== 公司机密资产(设备模型 / 设备数据,一律不入版本库) =====
+# 设备 3D 模型(GLB / PLY / SOG / Tile 等),含 model-viewer 上传与各种 3DGS 格式
+models/
+public/models/
+public/gs-data/
+*.glb
+*.ply
+*.sog
+
+# 设备实时数据落盘 / 缓存 / 数据库(sqlite 等)
+data/
+public/data/
+*.csv
+*.db
+*.sqlite
+*.sqlite3
+# GS 模型清单与元数据默认仍回退到 public/gs-data(已忽略),不入版本库
+public/gs-data/models.json
+
+# 环境变量 / 密钥 / 内网连接凭据(WebSocket / MQTT 地址、token 等)
+.env
+.env.*
+!.env.example
